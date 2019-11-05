@@ -25,6 +25,21 @@ class Post
         return $this->name;
     }
 
+    public function setName(string $name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+
+    public function setContent(string $content)
+    {
+        $this->content = $content;
+        return $this;
+    }
+
+
+
     public function getFormattedContent()
     {
         return nl2br(htmlentities($this->content));
@@ -64,4 +79,5 @@ class Post
         $this->categories[] = $category;
         $category->setPost($this);
     }
+
 }
