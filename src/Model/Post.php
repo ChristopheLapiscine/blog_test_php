@@ -38,6 +38,13 @@ class Post
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
 
 
     public function getFormattedContent()
@@ -57,10 +64,26 @@ class Post
         return new \DateTime($this->created_at);
     }
 
+    public function setCreatedAt(string $date)
+    {
+        $this->created_at = $date;
+        return $this;
+    }
+
     public function getSlug()
     {
         return $this->slug;
     }
+
+
+    /**
+     * @param mixed $slug
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    }
+
 
     public function getID ()
     {
