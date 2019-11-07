@@ -18,11 +18,19 @@ list($posts, $pagination)= (new PostTable($pdo))->findPaginated();
 </div>
 <?php endif ?>
 
+<?php if (isset($_GET['created'])): ?>
+    <div class="alert alert-success">
+        L'article a bien été crée
+    </div>
+<?php endif ?>
+
 <table class="table">
     <thead>
-        <th>Id</th>
+        <th>#</th>
         <th>Titre</th>
-        <th>Actions</th>
+        <th>
+            <a href="<?= $router->url('admin_post_new') ?>" class="btn btn-primary">Nouveau</a>
+        </th>
     </thead>
     <tbody>
     <?php foreach ($posts as $post): ?>

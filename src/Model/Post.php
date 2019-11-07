@@ -91,6 +91,14 @@ class Post
     }
 
     /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return array
      */
     public function getCategories()
@@ -102,5 +110,6 @@ class Post
         $this->categories[] = $category;
         $category->setPost($this);
     }
+
 
 }
