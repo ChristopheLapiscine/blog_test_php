@@ -14,25 +14,36 @@ final class PostTable extends Table
 
     public function createPost(Post $post)
     {
-       $id = $this->create(
-           [
-            'name' => $post->getName(),
-            'slug' => $post->getSlug(),
-            'content' => $post->getContent(),
-            'created_at' => $post->getCreatedAt()->format('Y-m-d H:i:s')
-           ]);
+        $id = $this->create(
+            [
+                'name' => $post->getName(),
+                'slug' => $post->getSlug(),
+                'content' => $post->getContent(),
+                'created_at' => $post->getCreatedAt()->format('Y-m-d H:i:s')
+            ]);
         $post->setId($id);
+
     }
 
     public function updatePost(Post $post)
     {
-            $this->update([
+        $this->update([
             'id' => $post->getID(),
             'name' => $post->getName(),
             'slug' => $post->getSlug(),
             'content' => $post->getContent(),
             'created_at' => $post->getCreatedAt()->format('Y-m-d H:i:s')
         ], $post->getID());
+
+    }
+
+    public function attachCategories(int $id, array $categories)
+    {
+        $this->pdo->exec('DELETE FROM post_category WHERE post_id = ' . $id);
+        $query = $this->pdo->prepare('INSERT INTO post_category SET post_id = ?, category_id = ?');
+        foreach ($categories as $category) {
+            $query->execute([$id, $category]);
+        }
     }
 
     public function findPaginated()

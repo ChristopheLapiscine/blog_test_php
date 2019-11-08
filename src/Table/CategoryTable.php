@@ -18,6 +18,7 @@ final class CategoryTable extends Table
     {
         $postsByID = [];
         foreach ($posts as $post) {
+            $post->setCategories([]);
             $postsByID[$post->getId()] = $post;
         }
         $categories = $this->pdo->query('
@@ -29,5 +30,16 @@ final class CategoryTable extends Table
         foreach ($categories as $category) {
             $postsByID[$category->getPostId()]->addCategory($category);
         }
+    }
+
+
+    public function list ()
+    {
+        $categories = $this->all();
+        $results = [];
+        foreach ($categories as $category){
+            $results[$category->getId()] = $category->getName() ;
+        }
+        return $results;
     }
 }
