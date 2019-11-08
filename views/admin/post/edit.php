@@ -5,6 +5,9 @@ use App\Table\PostTable;
 use App\HTML\Form;
 use App\Validators\PostValidator;
 use App\ObjectHelper;
+use App\Auth;
+
+Auth::check();
 
 $pdo = Connection::getPDO();
 $postTable = new PostTable($pdo);
@@ -19,7 +22,7 @@ if (!empty($_POST)){
 
 
     if ($v->validate()) {
-        $postTable->update($post);
+        $postTable->updatePost($post);
         $success = true;
     } else
         $errors = $v->errors();

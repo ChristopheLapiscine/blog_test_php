@@ -13,12 +13,12 @@ abstract class Table
     protected $table = null;
     protected $class = null;
 
-    public  function __construct(PDO $pdo)
+    public function __construct(PDO $pdo)
     {
-        if ($this->table === null){
+        if ($this->table === null) {
             throw new Exception("La class " . get_class($this) . " n'a pas de propriété \$table");
         }
-        if ($this->class === null){
+        if ($this->class === null) {
             throw new Exception("La class " . get_class($this) . " n'a pas de propriété \$class");
         }
         $this->pdo = $pdo;
@@ -30,17 +30,17 @@ abstract class Table
         $query->execute(['id' => $id]);
         $query->setFetchMode(PDO::FETCH_CLASS, $this->class);
         $result = $query->fetch();
-        if ($result === false){
+        if ($result === false) {
             throw new NotFoundException($this->table, $id);
         }
         return $result;
     }
 
-    public function exists(string $field, $value, ?int $except =null )
+    public function exists(string $field, $value, ?int $except = null)
     {
         $sql = "SELECT COUNT(id) FROM {$this->table} WHERE $field = ?";
         $params = [$value];
-        if ($except !==null){
+        if ($except !== null) {
             $sql .= " AND id != ?";
             $params[] = $except;
         }
@@ -50,4 +50,45 @@ abstract class Table
 
     }
 
+    public function all()
+    {
+        $sql = "SELECT * FROM {$this->table}";
+         return $this->pdo->query($sql, PDO::FETCH_CLASS, $this->class)->fetchAll();
+    }
+
+    public function delete (int $id)
+    {
+        $query= $this->pdo->prepare("DELETE FROM {$this->table} WHERE id = ?");
+        $ok = $query->execute([$id]);
+        if ($ok === false){
+            throw new \Exception("Impossible de supprimer l'enregistrement $id dans la atable {$this->table}");
+        }
+    }
+
+    public function create (array $data)
+    {
+        $sqlFields =[];
+        foreach ($data as $key => $value){
+            $sqlFields[] = "$key = :$key";
+        }
+        $query= $this->pdo->prepare("INSERT INTO {$this->table} SET " . implode(', ', $sqlFields));
+        $ok = $query->execute($data);
+        if ($ok === false){
+            throw new \Exception("Impossible de créer l'enregistrement dans la atable {$this->table}");
+        }
+         return (int)$this->pdo->lastInsertId();
+    }
+
+    public function update(array $data, int $id)
+    {
+        $sqlFields =[];
+        foreach ($data as $key => $value){
+            $sqlFields[] = "$key = :$key";
+        }
+        $query= $this->pdo->prepare("UPDATE {$this->table} SET " . implode(', ', $sqlFields) . " WHERE id = :id");
+        $ok = $query->execute(array_merge($data, ['id' => $id]));
+        if ($ok === false){
+            throw new \Exception("Impossible de modifier l'enregistrement dans la table {$this->table}");
+        }
+    }
 }

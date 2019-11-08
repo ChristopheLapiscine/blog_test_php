@@ -6,6 +6,7 @@ use App\Table\PostTable;
 
 Auth::check();
 
+$router->layout = "admin/layouts/default";
 $pdo = Connection::getPDO();
 $link = $router->url('admin_posts');
 list($posts, $pagination)= (new PostTable($pdo))->findPaginated();
