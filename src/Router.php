@@ -1,6 +1,8 @@
 <?php
 namespace App;
 
+use App\Security\ForbiddenException;
+
 class Router {
 
     /**
@@ -44,16 +46,23 @@ class Router {
 
     public function run(){
         $match = $this->router->match();
-        $view = $match['target'];
+        $view = $match['target'] ?: '/e404';
         $params = $match['params'];
         $router = $this;
         $layout = $this;
         $isAdmin = strpos($view, 'admin/') !== false;
         $layout = $isAdmin ? 'admin/layouts/default' : 'layouts/default';
-        ob_start();
-        require $this->viewPath . $view . '.php';
-        $content = ob_get_clean();
-        require $this->viewPath . DIRECTORY_SEPARATOR . $layout . '.php';
+
+        try {
+            ob_start();
+            require $this->viewPath . $view . '.php';
+            $content = ob_get_clean();
+            require $this->viewPath . DIRECTORY_SEPARATOR . $layout . '.php';
+        } catch (ForbiddenException $e){
+            header('Location :' . $this->url('login') . '?forbidden=1');
+            exit();
+        }
+
 
         return $this;
     }
